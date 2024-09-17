@@ -3,7 +3,6 @@ package com.mrgenis.poc.eventstream.common.config;
 import com.mrgenis.poc.eventstream.common.constant.RateLimitConst;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Refill;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,7 +26,6 @@ public class RateLimitFilter implements Filter {
 
   private final Map<String, Bucket> cache = new ConcurrentHashMap<>();
   private final RateLimitProperties rateLimitProperties;
-  private final HttpServletResponse httpServletResponse;
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -54,12 +52,11 @@ public class RateLimitFilter implements Filter {
    * rateLimitProperties
    */
   private Bucket newBucket(String clientIp) {
-    Refill refill = Refill.greedy(
-        rateLimitProperties.getLimit(),
-        rateLimitProperties.getDuration()
-    );
+    Bandwidth limitBandwidth = Bandwidth.builder()
+        .capacity(rateLimitProperties.getLimit())
+        .refillGreedy(rateLimitProperties.getLimit(), rateLimitProperties.getDuration())
+        .build();
 
-    Bandwidth limitBandwidth = Bandwidth.classic(rateLimitProperties.getLimit(), refill);
     return Bucket.builder().addLimit(limitBandwidth).build();
   }
 
