@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: @project.name@
+
+info:
+  app:
+    name: @project.name@
+    description: @project.description@
+    version: @project.version@
+
+
+rate-limit:
+  limit: 15
+  duration: 1m
+
