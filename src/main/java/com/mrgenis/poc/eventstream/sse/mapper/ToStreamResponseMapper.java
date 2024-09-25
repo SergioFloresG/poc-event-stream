@@ -13,7 +13,7 @@ import lombok.Getter;
  * in the form of a StreamChunk.
  */
 @Getter
-public class ToStreamResponseMapper<T> implements Function<T, StreamResponse<T>> {
+public class ToStreamResponseMapper<T> implements Function<T, StreamResponse<String>> {
 
   private final AtomicLong sequence;
 
@@ -55,14 +55,15 @@ public class ToStreamResponseMapper<T> implements Function<T, StreamResponse<T>>
    * @return a StreamResponse containing the original message and a StreamChunk with metadata
    */
   @Override
-  public StreamResponse<T> apply(T message) {
+  public StreamResponse<String> apply(T message) {
     var chunk = StreamChunk.builder()
         .id(sequence.getAndIncrement())
         .event("MESSAGE")
         .build();
 
-    return StreamResponse.<T>builder()
-        .data(message)
+    String data = message.toString();
+    return StreamResponse.<String>builder()
+        .data(data)
         .chunk(chunk)
         .build();
   }
