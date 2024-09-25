@@ -68,11 +68,11 @@ public class StringToDynamicJsonObject implements Function<String, JSONObject> {
 
     if (stringValue.matches(REGEX_AT_SIGN)) {
       // Se trata de un valor que varía en cada ejecución.
-      String fakerService = ((String) stringValue).replaceAll(REGEX_AT_SIGN, "$1");
+      String fakerService = stringValue.replaceAll(REGEX_AT_SIGN, "$1");
       fakerValue = fakerSupplierService.apply(SupplierType.DYNAMIC, fakerService);
     } else if (stringValue.matches(REGEX_HASH_SIGN)) {
       // Se trata de un valor que es constante en cada ejecución.
-      String fakerService = ((String) stringValue).replaceAll(REGEX_HASH_SIGN, "$1");
+      String fakerService = stringValue.replaceAll(REGEX_HASH_SIGN, "$1");
       fakerValue = fakerSupplierService.apply(SupplierType.ONETIME, fakerService);
     }
 

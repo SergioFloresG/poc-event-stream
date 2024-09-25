@@ -4,7 +4,6 @@ import com.mrgenis.poc.eventstream.sse.controller.response.StreamResponse;
 import com.mrgenis.poc.eventstream.sse.mapper.StringToDynamicJsonObject;
 import com.mrgenis.poc.eventstream.sse.mapper.ToServerSentEvent;
 import com.mrgenis.poc.eventstream.sse.mapper.ToStreamResponseMapper;
-import com.mrgenis.poc.eventstream.sse.usecase.LoremUseCase;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +23,6 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class SseController {
 
-  private final LoremUseCase loremUseCase;
   private final ToServerSentEvent<String> toStreamMapper;
   private final StringToDynamicJsonObject stringToDynamicJsonObject;
 
@@ -35,10 +33,9 @@ public class SseController {
     int randomNum = (int) (Math.random() * 2) + 5;
     JSONObject jsonObject = stringToDynamicJsonObject.apply(body);
 
-    /*List<String> messages =  loremUseCase.getLoremChunks();*/
     List<Object> messages = Collections.nCopies(randomNum, jsonObject);
 
-    var mapper = new ToStreamResponseMapper<Object>();
+    var mapper = new ToStreamResponseMapper<>();
     var toSSE = mapper.andThen(toStreamMapper);
 
     Supplier<ServerSentEvent<StreamResponse<String>>> lastMessage = () -> {

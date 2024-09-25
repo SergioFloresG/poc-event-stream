@@ -1,7 +1,6 @@
 package com.mrgenis.poc.eventstream.common.faker.service;
 
 import com.github.javafaker.Faker;
-import com.github.javafaker.service.FakeValuesService;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 public class FakerSupplierService implements
     BiFunction<FakerSupplierService.SupplierType, String, Object> {
 
-  private final FakeValuesService fakeService;
   private final Faker faker;
 
 
@@ -51,9 +49,7 @@ public class FakerSupplierService implements
   @Override
   public FakerValue apply(SupplierType supplierType, String service) {
     final String expression = String.format("#{%s}", service);
-    Supplier<Object> fakerSupplier = () -> {
-      return faker.expression(expression);
-    };
+    Supplier<Object> fakerSupplier = () -> faker.expression(expression);
 
     return switch (supplierType) {
       case DYNAMIC -> new FakerValue(SupplierType.DYNAMIC, dynamicSupplier(fakerSupplier));
