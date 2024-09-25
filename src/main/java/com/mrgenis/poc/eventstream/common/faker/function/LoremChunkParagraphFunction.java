@@ -1,4 +1,4 @@
-package com.mrgenis.poc.eventstream.common.lorem.function;
+package com.mrgenis.poc.eventstream.common.faker.function;
 
 import java.util.ArrayList;
 import java.util.Arrays;
