@@ -1,8 +1,8 @@
 package com.mrgenis.poc.eventstream.common.faker.supplier;
 
-import com.github.javafaker.Faker;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
+import net.datafaker.Faker;
 import org.springframework.stereotype.Component;
 
 /**

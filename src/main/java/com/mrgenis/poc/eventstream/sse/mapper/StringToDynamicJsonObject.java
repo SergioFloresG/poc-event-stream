@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class StringToDynamicJsonObject implements Function<String, JSONObject> {
 
-  private static final String REGEX_AT_SIGN = "^@(.+)@$";
-  private static final String REGEX_HASH_SIGN = "^#(.+)#$";
+  private static final String REGEX_AT_SIGN = "^@(.+)$";
+  private static final String REGEX_HASH_SIGN = "^#(.+)$";
   private final FakerSupplierService fakerSupplierService;
 
   @Override

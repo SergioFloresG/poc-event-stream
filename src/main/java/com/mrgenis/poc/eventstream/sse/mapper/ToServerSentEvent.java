@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
  * within an event-streaming context.
  */
 @Service
-public class ToServerSentEvent<T> implements
-    Function<StreamResponse<T>, ServerSentEvent<StreamResponse<T>>> {
+public class ToServerSentEvent implements
+    Function<StreamResponse<Object>, ServerSentEvent<StreamResponse<Object>>> {
 
   @Override
-  public ServerSentEvent<StreamResponse<T>> apply(StreamResponse<T> message) {
-    return ServerSentEvent.<StreamResponse<T>>builder()
+  public ServerSentEvent<StreamResponse<Object>> apply(StreamResponse<Object> message) {
+    return ServerSentEvent.<StreamResponse<Object>>builder()
         .id(String.valueOf(message.getChunk().getId()))
         .event(message.getChunk().getEvent())
         .data(message)

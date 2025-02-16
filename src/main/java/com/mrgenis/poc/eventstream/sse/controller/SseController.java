@@ -7,6 +7,7 @@ import com.mrgenis.poc.eventstream.sse.mapper.ToStreamResponseMapper;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
@@ -23,24 +24,26 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class SseController {
 
-  private final ToServerSentEvent<String> toStreamMapper;
+  private final ToServerSentEvent toStreamMapper;
   private final StringToDynamicJsonObject stringToDynamicJsonObject;
 
   @CrossOrigin(origins = "*")
   @PostMapping(path = "/stream-sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public Flux<ServerSentEvent<StreamResponse<String>>> streamEvent(@RequestBody String body) {
+  public Flux<ServerSentEvent<StreamResponse<Object>>> streamEvent(@RequestBody String body) {
 
     int randomNum = (int) (Math.random() * 2) + 5;
     JSONObject jsonObject = stringToDynamicJsonObject.apply(body);
 
-    List<Object> messages = Collections.nCopies(randomNum, jsonObject);
+    List<Map<String, Object>> messages = Collections.nCopies(randomNum, jsonObject)
+        .stream().parallel()
+        .map(json -> new JSONObject(json.toString()))
+        .map(JSONObject::toMap)
+        .toList();
 
     var mapper = new ToStreamResponseMapper<>();
-    var toSSE = mapper.andThen(toStreamMapper);
-
-    Supplier<ServerSentEvent<StreamResponse<String>>> lastMessage = () -> {
+    Supplier<ServerSentEvent<StreamResponse<Object>>> lastMessage = () -> {
       Long id = mapper.getSequence().getAndIncrement();
-      return ServerSentEvent.<StreamResponse<String>>builder()
+      return ServerSentEvent.<StreamResponse<Object>>builder()
           .event("END")
           .id(String.valueOf(id))
           .build();
@@ -48,7 +51,7 @@ public class SseController {
 
     var processMessages = Flux.fromIterable(messages)
         .delayElements(Duration.ofMillis(500))
-        .map(toSSE);
+        .map(mapper.andThen(toStreamMapper));
 
     return processMessages
         .concatWith(Mono.fromSupplier(lastMessage));

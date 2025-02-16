@@ -1,12 +1,12 @@
 package com.mrgenis.poc.eventstream.common.faker;
 
-import com.github.javafaker.Faker;
-import com.github.javafaker.service.FakeValuesService;
-import com.github.javafaker.service.RandomService;
+
 import java.util.Locale;
 import java.util.Random;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.datafaker.Faker;
+
 
 /**
  * FakerBuilder is a builder class for creating instances of the Faker class. It allows the user to
@@ -28,10 +28,6 @@ public class FakerBuilder {
    */
   public Faker build() {
     return new Faker(locale, random);
-  }
-
-  public FakeValuesService buildService() {
-    return new FakeValuesService(locale, new RandomService(random));
   }
 
 }
