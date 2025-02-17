@@ -1,10 +1,13 @@
 package com.mrgenis.poc.eventstream.sse.mapper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mrgenis.poc.eventstream.sse.controller.response.StreamChunk;
 import com.mrgenis.poc.eventstream.sse.controller.response.StreamResponse;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import lombok.Getter;
+import lombok.SneakyThrows;
+import org.json.JSONObject;
 
 /**
  * The SequentialStringToStreamResponseMapper class is a specialized Function that transforms a
@@ -13,9 +16,11 @@ import lombok.Getter;
  * in the form of a StreamChunk.
  */
 @Getter
-public class ToStreamResponseMapper<T> implements Function<T, StreamResponse<Object>> {
+public class ToStreamResponseMapper<T> implements Function<T, StreamResponse<JSONObject>> {
+
 
   private final AtomicLong sequence;
+  private final ObjectMapper mapper = new ObjectMapper();
 
   /**
    * Constructs a SequentialStringToStreamResponseMapper with an initialValue for the sequence.
@@ -54,15 +59,19 @@ public class ToStreamResponseMapper<T> implements Function<T, StreamResponse<Obj
    * @param message the message to be transformed into a StreamResponse
    * @return a StreamResponse containing the original message and a StreamChunk with metadata
    */
+  @SneakyThrows
   @Override
-  public StreamResponse<Object> apply(T message) {
+  public StreamResponse<JSONObject> apply(T message) {
     var chunk = StreamChunk.builder()
         .id(sequence.getAndIncrement())
         .event("MESSAGE")
         .build();
 
-    return StreamResponse.builder()
-        .data(message)
+    String jsonString = message.toString();
+    JSONObject jsonObject = new JSONObject(jsonString);
+
+    return StreamResponse.<JSONObject>builder()
+        .data(jsonObject)
         .chunk(chunk)
         .build();
   }

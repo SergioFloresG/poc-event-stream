@@ -1,5 +1,7 @@
 package com.mrgenis.poc.eventstream.sse.controller.response;
 
+import java.io.Serial;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(builderClassName = "Builder")
-public class StreamResponse<T> {
+public class StreamResponse<T> implements Serializable {
+
+  @Serial
+  private static final long serialVersionUID = 1L;
 
   private T data;
 

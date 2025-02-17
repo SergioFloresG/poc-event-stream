@@ -29,24 +29,18 @@ public class SseController {
 
   @CrossOrigin(origins = "*")
   @PostMapping(path = "/stream-sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public Flux<ServerSentEvent<StreamResponse<Object>>> streamEvent(@RequestBody String body) {
+  public Flux<ServerSentEvent<StreamResponse<Map<String, Object>>>> streamEvent(
+      @RequestBody String body) {
 
     int randomNum = (int) (Math.random() * 2) + 5;
     JSONObject jsonObject = stringToDynamicJsonObject.apply(body);
 
-    List<Map<String, Object>> messages = Collections.nCopies(randomNum, jsonObject)
-        .stream().parallel()
-        .map(json -> new JSONObject(json.toString()))
-        .map(JSONObject::toMap)
-        .toList();
+    List<JSONObject> messages = Collections.nCopies(randomNum, jsonObject);
 
     var mapper = new ToStreamResponseMapper<>();
-    Supplier<ServerSentEvent<StreamResponse<Object>>> lastMessage = () -> {
+    Supplier<ServerSentEvent<StreamResponse<Map<String, Object>>>> lastMessage = () -> {
       Long id = mapper.getSequence().getAndIncrement();
-      return ServerSentEvent.<StreamResponse<Object>>builder()
-          .event("END")
-          .id(String.valueOf(id))
-          .build();
+      return toStreamMapper.lastMessage(id);
     };
 
     var processMessages = Flux.fromIterable(messages)

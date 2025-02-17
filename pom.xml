@@ -87,6 +87,12 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.skyscreamer</groupId>
+          <artifactId>jsonassert</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>io.projectreactor</groupId>
@@ -115,16 +121,6 @@
           </excludes>
         </configuration>
       </plugin>
-
-      <!--<plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.13.0</version>
-        <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
-        </configuration>
-      </plugin>-->
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

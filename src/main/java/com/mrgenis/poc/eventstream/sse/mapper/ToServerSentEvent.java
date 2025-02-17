@@ -1,7 +1,9 @@
 package com.mrgenis.poc.eventstream.sse.mapper;
 
 import com.mrgenis.poc.eventstream.sse.controller.response.StreamResponse;
+import java.util.Map;
 import java.util.function.Function;
+import org.json.JSONObject;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 
@@ -12,14 +14,28 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ToServerSentEvent implements
-    Function<StreamResponse<Object>, ServerSentEvent<StreamResponse<Object>>> {
+    Function<StreamResponse<JSONObject>, ServerSentEvent<StreamResponse<Map<String, Object>>>> {
 
   @Override
-  public ServerSentEvent<StreamResponse<Object>> apply(StreamResponse<Object> message) {
-    return ServerSentEvent.<StreamResponse<Object>>builder()
+  public ServerSentEvent<StreamResponse<Map<String, Object>>> apply(
+      StreamResponse<JSONObject> message) {
+    JSONObject data = message.getData();
+    Map<String, Object> dataMap = data.toMap();
+
+    StreamResponse<Map<String, Object>> response
+        = new StreamResponse<>(dataMap, message.getChunk());
+
+    return ServerSentEvent.<StreamResponse<Map<String, Object>>>builder()
         .id(String.valueOf(message.getChunk().getId()))
         .event(message.getChunk().getEvent())
-        .data(message)
+        .data(response)
+        .build();
+  }
+
+  public ServerSentEvent<StreamResponse<Map<String, Object>>> lastMessage(Long id) {
+    return ServerSentEvent.<StreamResponse<Map<String, Object>>>builder()
+        .id(String.valueOf(id))
+        .event("END")
         .build();
   }
 

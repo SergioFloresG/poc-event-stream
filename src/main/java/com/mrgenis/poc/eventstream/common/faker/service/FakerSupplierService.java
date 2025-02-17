@@ -1,5 +1,6 @@
 package com.mrgenis.poc.eventstream.common.faker.service;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -33,6 +34,7 @@ public class FakerSupplierService implements
     private final Supplier<Object> supplier;
 
     @Override
+    @JsonValue
     public String toString() {
       return supplier.get().toString();
     }
