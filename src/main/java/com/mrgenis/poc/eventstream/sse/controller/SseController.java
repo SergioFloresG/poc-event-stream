@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
@@ -43,15 +42,15 @@ public class SseController {
     List<JSONObject> messages = Collections.nCopies(randomNum, jsonObject);
 
     var mapper = new ToStreamResponseMapper<>();
-    long id = mapper.getSequence().getAndIncrement();
-    Supplier<ServerSentEvent<StreamResponse<Map<String, Object>>>> lastMessage
-        = () -> toStreamMapper.lastMessage(id);
-
     var processMessages = Flux.fromIterable(messages)
         .delayElements(Duration.ofMillis(500))
         .map(mapper.andThen(toStreamMapper));
 
     return processMessages
-        .concatWith(Mono.fromSupplier(lastMessage));
+        .concatWith(Mono.fromSupplier(() -> {
+          long id = mapper.getSequence().getAndIncrement();
+          return toStreamMapper.lastMessage(id);
+        }));
   }
+
 }
