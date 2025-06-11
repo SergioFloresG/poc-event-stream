@@ -32,7 +32,7 @@ public class ToServerSentEvent implements
         .build();
   }
 
-  public ServerSentEvent<StreamResponse<Map<String, Object>>> lastMessage(Long id) {
+  public ServerSentEvent<StreamResponse<Map<String, Object>>> lastMessage(long id) {
     return ServerSentEvent.<StreamResponse<Map<String, Object>>>builder()
         .id(String.valueOf(id))
         .event("END")

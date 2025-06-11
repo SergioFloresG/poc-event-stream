@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 
 public class StreamChunk {
 
-  private Long id;
+  private long id;
   private String event;
   @Default
   private LocalDateTime timestamp = LocalDateTime.now();
